@@ -19,7 +19,7 @@ export default function astroOGImage({
         const filteredRoutes = routes.filter((route) => {
           return /^src\/pages\/publicacoes\/.+\.md/.test(route.component);
         });
-        console.log(filteredRoutes);
+        // console.log(filteredRoutes);
 
         const browser = await puppeteer.launch({
           args: ["--no-sandbox", "--disable-setuid-sandbox"],
@@ -58,20 +58,20 @@ export default function astroOGImage({
               height: 630,
             });
 
-            console.log(
-              new URL(
-                `./assets${route.route.replace("/publicacoes", "")}.png`,
-                dir
-              )
+            const opengraphImageDistPath = route.distURL?.pathname.replace(
+              "index.html",
+              "opengraph-image.png"
             );
 
+            console.log("new route", opengraphImageDistPath);
+
+            if (!opengraphImageDistPath) {
+              console.error("Failed to compose file path for generated image.")
+              return;
+            }
+
             await page.screenshot({
-              path: fileURLToPath(
-                new URL(
-                  `./assets${route.route.replace("/publicacoes", "")}.png`,
-                  dir
-                )
-              ),
+              path: fileURLToPath(new URL(opengraphImageDistPath, dir)),
               encoding: "binary",
             });
           })
